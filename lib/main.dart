@@ -2,6 +2,8 @@ import 'package:esp32_ble_mqtt_app/main_screen/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import 'package:flutter_blue/flutter_blue.dart';
+
 void main() {
   runApp(const MyApp());
 }
