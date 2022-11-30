@@ -1,5 +1,6 @@
 import 'package:esp32_ble_mqtt_app/main_screen/main_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:flutter_blue/flutter_blue.dart';
@@ -33,19 +34,89 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: MaterialColor(0xFF2C5A5B, color),
       ),
-      home: const MyHomePage(),
+      home: MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+  final FlutterBlue flutterBlue = FlutterBlue.instance;
+
+  MyHomePage({super.key});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  BluetoothDevice? connectedDevice;
+
+  void setConnectedDevice(BluetoothDevice? deviceName) {
+    setState(() {
+      connectedDevice = deviceName;
+    });
+  }
+
+  void _autoConnectToDevice(BluetoothDevice device) async {
+    widget.flutterBlue.stopScan();
+
+    try {
+      await device.connect();
+    } on PlatformException catch (e) {
+      if (e.code != 'already_connected') {
+        rethrow;
+      }
+    }
+
+    setState(() {
+      connectedDevice = device;
+    });
+  }
+
+  void _scanAndSearchDevice() async {
+    widget.flutterBlue.connectedDevices
+        .asStream()
+        .listen((List<BluetoothDevice> devices) {
+      for (BluetoothDevice device in devices) {
+        if (device.name.startsWith("ESP_GATTS_DEMO")) {
+          _autoConnectToDevice(device);
+        }
+      }
+    });
+
+    widget.flutterBlue.scanResults.listen((List<ScanResult> results) {
+      for (ScanResult result in results) {
+        if (result.device.name.startsWith("ESP_GATTS_DEMO")) {
+          _autoConnectToDevice(result.device);
+        }
+      }
+    });
+
+    widget.flutterBlue.startScan();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _scanAndSearchDevice();
+  }
+
+  Widget _buildView() {
+    if (connectedDevice != null) {
+      return MainScreen(
+        device: connectedDevice!,
+      );
+    } else {
+      return SizedBox(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height / 1.3,
+        child: const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,9 +131,9 @@ class _MyHomePageState extends State<MyHomePage> {
           onPressed: () {},
         ),
       ),
-      body: const Padding(
-        padding: EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
-        child: MainScreen(),
+      body: Padding(
+        padding: const EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
+        child: _buildView(),
       ),
     );
   }
