@@ -136,9 +136,12 @@ class _DeviceCardState extends State<DeviceCard> {
                     ),
                   ],
                 ),
-                Image.asset(
-                  "assets/images/ESP32_38Pines_ESPWROOM32.png",
-                  width: 140,
+                Container(
+                  margin: const EdgeInsets.only(top: 30.0),
+                  child: Image.asset(
+                    "assets/images/ESP32_38Pines_ESPWROOM32.png",
+                    width: 120,
+                  ),
                 ),
               ],
             ),

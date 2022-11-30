@@ -122,12 +122,12 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        shadowColor: Colors.transparent,
+        backgroundColor: Colors.white,
+        shadowColor: Colors.white,
+        elevation: 0.0,
         leading: IconButton(
-          // icon: const Icon( Icons.menu_rounded, color: Color.fromARGB(255, 44, 90, 91),),
-          // icon: Image.asset("assets/images/Menu_Button.svg"),
-          icon: SvgPicture.asset("assets/images/Menu_Button.svg"),
+          icon: SvgPicture.asset("assets/images/Menu_Button2.svg"),
+          padding: const EdgeInsets.only(left: 20.0),
           onPressed: () {},
         ),
       ),

@@ -68,25 +68,27 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return (Column(
-      children: [
-        FutureBuilder<List<Widget>>(
-          future: _discoverServicesAndCharacteristics(),
-          builder: (BuildContext context, AsyncSnapshot snapshot) {
-            if (!snapshot.hasData) {
-              return SizedBox(
+    return FutureBuilder<List<Widget>>(
+      future: _discoverServicesAndCharacteristics(),
+      builder: ((context, snapshot) {
+        if (!snapshot.hasData) {
+          return Column(
+            children: [
+              SizedBox(
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height / 1.3,
                 child: const Center(
                   child: CircularProgressIndicator(),
                 ),
-              );
-            } else {
-              return snapshot.data;
-            }
-          },
-        ),
-      ],
-    ));
+              )
+            ],
+          );
+        } else {
+          return Column(
+            children: snapshot.data!,
+          );
+        }
+      }),
+    );
   }
 }
